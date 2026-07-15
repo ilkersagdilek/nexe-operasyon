@@ -151,6 +151,36 @@
 .table tbody tr:last-child { border-bottom: none; }
 .table td { padding: 8px 12px; font-size: 13px; vertical-align: middle; }
 
+.thStar { width: 34px; text-align: center !important; color: #D5C186 !important; }
+.tdStar { width: 34px; text-align: center; padding-left: 8px !important; padding-right: 4px !important; }
+.starBtn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #B8B8B8;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .15s, background .15s, border-color .15s, transform .15s;
+}
+.starBtn:hover {
+  background: rgba(213,193,134,.16);
+  border-color: rgba(213,193,134,.45);
+  color: #A9954F;
+  transform: translateY(-1px);
+}
+.starActive,
+.starActive:hover {
+  color: #D5C186;
+  background: rgba(213,193,134,.2);
+  border-color: rgba(213,193,134,.65);
+}
+
 /* Row background colours */
 .row_tip { background: var(--tip); }
 .row_dis { background: var(--dis); }
