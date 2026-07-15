@@ -45,6 +45,7 @@ export default function Home() {
   const [fMeslek, setFMeslek] = useState('')
   const [fDurum, setFDurum] = useState('')
   const [fOdeme, setFOdeme] = useState('')
+  const [fYildiz, setFYildiz] = useState(false)
   const [modal, setModal] = useState(null)
   const [noteText, setNoteText] = useState('')
   const [selDurum, setSelDurum] = useState('')
@@ -217,20 +218,21 @@ export default function Home() {
       r.odeme,
       r.notlar,
     ].join(' ').toLocaleLowerCase('tr-TR').includes(q)
-    const meslekMatch = !fMeslek || r.meslek === MESLEKLER.find(m => m === fMeslek)
+    const meslekMatch = !fMeslek || r.meslek === fMeslek
     const durumMatch = !fDurum || (fDurum === 'Yeni Talep'
       ? (!r.durum || r.durum === 'Yeni Talep')
       : r.durum === fDurum)
     const odemeMatch = !fOdeme || r.odeme === fOdeme
-    return textMatch && meslekMatch && durumMatch && odemeMatch
+    const yildizMatch = !fYildiz || r.yildiz === 'YILDIZ'
+    return textMatch && meslekMatch && durumMatch && odemeMatch && yildizMatch
   })
 
   const total = rows.length
-  const yeni = rows.filter(r => !r.durum || r.durum === 'Yeni Talep').length
-  const gorusuldu = rows.filter(r => r.durum === 'Görüşüldü').length
+  const yildizli = rows.filter(r => r.yildiz === 'YILDIZ').length
   const musteri = rows.filter(r => r.durum === 'Müşteri Oldu').length
-  const bekleyenOdeme = rows.filter(r => r.komisyon && r.odeme !== 'Ödendi' && r.odeme !== 'İptal').length
-  const komisyonToplam = rows.reduce((sum, r) => sum + parseMoney(r.komisyon), 0)
+  const muhtemelRows = rows.filter(r => r.komisyon && r.odeme !== 'Ödendi' && r.odeme !== 'İptal')
+  const muhtemelOdeme = muhtemelRows.length
+  const muhtemelKomisyon = muhtemelRows.reduce((sum, r) => sum + parseMoney(r.komisyon), 0)
   const odenenToplam = rows
     .filter(r => r.odeme === 'Ödendi')
     .reduce((sum, r) => sum + parseMoney(r.komisyon), 0)
@@ -269,14 +271,12 @@ export default function Home() {
       </header>
 
       <div className={styles.statsBar}>
-        <Stat color="#283593" num={yeni} label="Yeni" />
-        <Stat color="#0D47A1" num={gorusuldu} label="Görüşüldü" />
+        <Stat color="#1B2C48" num={total} label="Toplam" />
+        <Stat color="#D5C186" num={yildizli} label="Yıldızlı" />
         <Stat color="#4A148C" num={musteri} label="Müşteri" />
-        <Stat color="#E65100" num={bekleyenOdeme} label="Ödeme Bekler" />
-        <div className={styles.statsSep} />
-        <Stat color="#00695C" num={`${komisyonToplam} €`} label="Komisyon" />
+        <Stat color="#E65100" num={muhtemelOdeme} label="Muhtemel Ödeme" />
+        <Stat color="#00695C" num={`${muhtemelKomisyon} €`} label="Muhtemel Komisyon" />
         <Stat color="#1B5E20" num={`${odenenToplam} €`} label="Ödenen" />
-        <Stat color="#1B2C48" num={total} label="Toplam" right />
       </div>
 
       <div className={styles.toolbar}>
@@ -303,6 +303,12 @@ export default function Home() {
           <option value="">Tüm Ödemeler</option>
           {ODEME_DURUMLARI.map(o => <option key={o} value={o}>{o}</option>)}
         </select>
+        <button
+          className={`${styles.btnStarFilter} ${fYildiz ? styles.btnStarFilterActive : ''}`}
+          onClick={() => setFYildiz(prev => !prev)}
+        >
+          ★ Yıldızlılar
+        </button>
         <button className={styles.btnScrollBottom} onClick={() => tableWrapRef.current?.scrollTo({ top: tableWrapRef.current.scrollHeight, behavior: 'smooth' })}>
           En Alta
         </button>
