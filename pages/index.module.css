@@ -348,7 +348,7 @@
 }
 .formGrid input:focus,
 .formGrid select:focus { border-color: var(--red); }
-history {
+.history {
   background: var(--bg); border-radius: 8px; padding: 10px 14px;
   max-height: 150px; overflow-y: auto;
   font-family: 'DM Mono', monospace; font-size: 11px;
