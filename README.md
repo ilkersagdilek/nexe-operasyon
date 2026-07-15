@@ -7,7 +7,7 @@ Instagram reklamlarından gelen FSP/denklik bilgilendirme taleplerini, görüşm
 İlk satır başlıkları şu sırayla olmalı:
 
 ```text
-İSİM | MESLEK | TELEFON | GELİŞ TARİHİ | SON GÖRÜŞME | DURUM | KOMİSYON | ÖDEME | MÜŞTERİ OLMA TARİHİ | NOTLAR
+İSİM | MESLEK | TELEFON | GELİŞ TARİHİ | SON GÖRÜŞME | DURUM | KOMİSYON | ÖDEME | MÜŞTERİ OLMA TARİHİ | NOTLAR | YILDIZ
 ```
 
 Önerilen sayfa adı:
@@ -28,6 +28,7 @@ NEXE Operasyon
 - `ÖDEME`: Bekliyor, Ödendi veya İptal.
 - `MÜŞTERİ OLMA TARİHİ`: Komisyon dönem takibi için.
 - `NOTLAR`: Görüşme geçmişi.
+- `YILDIZ`: Çok yüksek potansiyelli adaylar için uygulama tarafından işaretlenir.
 
 ## Vercel Ortam Değişkenleri
 
