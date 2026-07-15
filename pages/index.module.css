@@ -422,7 +422,20 @@
 }
 @media (max-width: 600px) {
   .hideS { display: none; }
-  .statsBar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; padding: 8px 12px; }
+  .statsBar {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px;
+    padding: 8px 12px;
+  }
+  .stat { gap: 5px; padding: 5px 9px; }
+  .stat:nth-child(1),
+  .stat:nth-child(2),
+  .stat:nth-child(3) { grid-column: span 2; }
+  .stat:nth-child(4),
+  .stat:nth-child(5),
+  .stat:nth-child(6) { grid-column: span 3; }
+  .statNum { font-size: 15px; }
+  .statLabel { font-size: 10.5px; }
   .toolbar  { gap: 6px; padding: 8px 12px; }
   .tableWrap { padding: 8px 10px; }
   .loginCard { padding: 32px 24px; }
