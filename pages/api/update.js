@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     komisyon,
     odeme,
     musteriOlmaTarihi,
+    yildiz,
     kullanici,
   } = req.body
 
@@ -32,6 +33,7 @@ export default async function handler(req, res) {
       odeme: odeme !== undefined ? odeme : row.odeme,
       musteriOlmaTarihi: musteriOlmaTarihi !== undefined ? musteriOlmaTarihi : row.musteriOlmaTarihi,
       notlar: combined,
+      yildiz: yildiz !== undefined ? yildiz : row.yildiz,
     }
 
     await updateRow(row.isim, values)
