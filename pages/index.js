@@ -139,6 +139,7 @@ export default function Home() {
               odeme: data.odeme,
               musteriOlmaTarihi: data.musteriOlmaTarihi,
               notlar: data.notlar,
+              yildiz: data.yildiz,
             }
           : r
       ))
@@ -159,6 +160,29 @@ export default function Home() {
     setSelOdeme(row.odeme || 'Bekliyor')
     setSelMusteriTarihi(row.musteriOlmaTarihi || '')
     setTimeout(() => noteRef.current?.focus(), 100)
+  }
+
+  async function toggleStar(row) {
+    const next = row.yildiz === 'YILDIZ' ? '' : 'YILDIZ'
+    setRows(prev => prev.map(r => r.rowNum === row.rowNum ? { ...r, yildiz: next } : r))
+
+    try {
+      const res = await fetch('/api/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isim: row.isim,
+          yildiz: next,
+          kullanici,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      showToast(next ? 'Yıldızlandı' : 'Yıldız kaldırıldı', 'success')
+    } catch (e) {
+      setRows(prev => prev.map(r => r.rowNum === row.rowNum ? { ...r, yildiz: row.yildiz } : r))
+      showToast('Yıldız kaydedilemedi: ' + e.message, 'error')
+    }
   }
 
   function closeModal() {
@@ -193,7 +217,7 @@ export default function Home() {
       r.odeme,
       r.notlar,
     ].join(' ').toLocaleLowerCase('tr-TR').includes(q)
-    const meslekMatch = !fMeslek || r.meslek === fMeslek
+    const meslekMatch = !fMeslek || r.meslek === MESLEKLER.find(m => m === fMeslek)
     const durumMatch = !fDurum || (fDurum === 'Yeni Talep'
       ? (!r.durum || r.durum === 'Yeni Talep')
       : r.durum === fDurum)
@@ -295,6 +319,7 @@ export default function Home() {
           <table className={styles.table}>
             <thead>
               <tr>
+                <th className={styles.thStar}>★</th>
                 <th>#</th>
                 <th>İsim</th>
                 <th>Meslek</th>
@@ -316,6 +341,16 @@ export default function Home() {
                   : ''
                 return (
                   <tr key={r.rowNum} className={`${styles.row} ${styles['row_' + meslekKey(r.meslek)]}`}>
+                    <td className={styles.tdStar}>
+                      <button
+                        className={`${styles.starBtn} ${r.yildiz === 'YILDIZ' ? styles.starActive : ''}`}
+                        title={r.yildiz === 'YILDIZ' ? 'Öncelik yıldızını kaldır' : 'Öncelikli aday olarak yıldızla'}
+                        onClick={() => toggleStar(r)}
+                        aria-label={r.yildiz === 'YILDIZ' ? 'Yıldızı kaldır' : 'Yıldızla'}
+                      >
+                        ★
+                      </button>
+                    </td>
                     <td className={styles.tdIdx}>{idx + 1}</td>
                     <td className={styles.tdName}>{r.isim}</td>
                     <td><MeslekBadge m={r.meslek} /></td>
@@ -341,7 +376,7 @@ export default function Home() {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={12} className={styles.empty}>Sonuç bulunamadı.</td>
+                  <td colSpan={13} className={styles.empty}>Sonuç bulunamadı.</td>
                 </tr>
               )}
             </tbody>
