@@ -16,7 +16,7 @@ const DURUMLAR = [
   { key: 'Olumsuz', label: 'Olumsuz', bg: '#FFEBEE', color: '#B71C1C' },
 ]
 
-const ODEME_DURUMLARI = ['Bekliyor', 'Ödendi', 'İptal']
+const ODEME_DURUMLARI = ['Bekliyor', 'Ödendi', 'Oluşmadı']
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10)
@@ -33,6 +33,10 @@ function parseMoney(value) {
     .replace(/[^0-9.-]/g, '')
   const amount = Number(normalized)
   return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeOdeme(value) {
+  return value === 'İptal' ? 'Oluşmadı' : value
 }
 
 export default function Home() {
@@ -158,7 +162,7 @@ export default function Home() {
     setNoteText('')
     setSelDurum(row.durum || 'Yeni Talep')
     setSelKomisyon(row.komisyon || '')
-    setSelOdeme(row.odeme || 'Bekliyor')
+    setSelOdeme(normalizeOdeme(row.odeme) || 'Bekliyor')
     setSelMusteriTarihi(row.musteriOlmaTarihi || '')
     setTimeout(() => noteRef.current?.focus(), 100)
   }
@@ -230,7 +234,10 @@ export default function Home() {
   const total = rows.length
   const yildizli = rows.filter(r => r.yildiz === 'YILDIZ').length
   const musteri = rows.filter(r => r.durum === 'Müşteri Oldu').length
-  const muhtemelRows = rows.filter(r => r.komisyon && r.odeme !== 'Ödendi' && r.odeme !== 'İptal')
+  const muhtemelRows = rows.filter(r => {
+    const odeme = normalizeOdeme(r.odeme)
+    return r.komisyon && odeme !== 'Ödendi' && odeme !== 'Oluşmadı'
+  })
   const muhtemelOdeme = muhtemelRows.length
   const muhtemelKomisyon = muhtemelRows.reduce((sum, r) => sum + parseMoney(r.komisyon), 0)
   const odenenToplam = rows
@@ -276,7 +283,7 @@ export default function Home() {
         <Stat color="#4A148C" num={musteri} label="Müşteri" />
         <Stat color="#E65100" num={muhtemelOdeme} label="Muhtemel Ödeme" />
         <Stat color="#00695C" num={`${muhtemelKomisyon} €`} label="Muhtemel Komisyon" />
-        <Stat color="#1B5E20" num={`${odenenToplam} €`} label="Ödenen" />
+        <Stat color="#1B5E20" num={`${odenenToplam} €`} label="Toplam Ödenen" />
       </div>
 
       <div className={styles.toolbar}>
@@ -492,13 +499,14 @@ function DurumBadge({ d }) {
 }
 
 function OdemeBadge({ value }) {
+  const label = normalizeOdeme(value) || 'Bekliyor'
   const style = {
     'Ödendi': { bg: '#E8F5E9', color: '#1B5E20' },
-    'İptal': { bg: '#ECEFF1', color: '#546E7A' },
+    'Oluşmadı': { bg: '#ECEFF1', color: '#546E7A' },
     'Bekliyor': { bg: '#FFF3E0', color: '#E65100' },
-  }[value] || { bg: '#FFF3E0', color: '#E65100' }
+  }[label] || { bg: '#FFF3E0', color: '#E65100' }
 
-  return <span className={styles.badge} style={{ background: style.bg, color: style.color }}>{value || 'Bekliyor'}</span>
+  return <span className={styles.badge} style={{ background: style.bg, color: style.color }}>{label}</span>
 }
 
 function meslekKey(m) {
