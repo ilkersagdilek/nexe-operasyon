@@ -236,7 +236,7 @@ export default function Home() {
   const musteri = rows.filter(r => r.durum === 'Müşteri Oldu').length
   const muhtemelRows = rows.filter(r => {
     const odeme = normalizeOdeme(r.odeme)
-    return r.komisyon && odeme !== 'Ödendi' && odeme !== 'Oluşmadı'
+    return r.komisyon && odeme !== 'Ödendi'
   })
   const muhtemelOdeme = muhtemelRows.length
   const muhtemelKomisyon = muhtemelRows.reduce((sum, r) => sum + parseMoney(r.komisyon), 0)
